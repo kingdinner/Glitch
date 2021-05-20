@@ -6,22 +6,26 @@ const express = require('express');
 const morgan = require('morgan');
 const app = express();
 const bodyParser = require('body-parser');
+const path  = require('path');
+const ejs = require('ejs');
+const route = require('./routes/glitch');
 
-app.use(bodyParser());
+require("dotenv").config();
+
+app.use(bodyParser.urlencoded({
+  extended:true
+}));
+
+app.use(bodyParser.json());
 app.use(morgan());
 
-// we've started you off with Express,
-// but feel free to use whatever libs or frameworks you'd like through `package.json`.
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'))
 
-// http://expressjs.com/en/starter/static-files.html
 app.use(express.static('public'));
 
-// http://expressjs.com/en/starter/basic-routing.html
-app.get('/', (request, response) => {
-  response.sendFile(__dirname + '/views/index.html');
-});
+app.use('/', route);
 
-// listen for requests :)
 const listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
