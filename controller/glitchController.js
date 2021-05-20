@@ -26,7 +26,6 @@ function emailSendController(request, response) {
     ])
     .then(
         axios.spread((...accountResponse) => {
-        console.log(request)
         const user = userExist(accountResponse[0].data, request.body.userid)
         if (user.length < 1) {
             return response.send("Not exists", 404)
