@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router()
 const productController = require('../controller/glitchController');
+
 router.get('/', (request, response) => {
     response.render('index');
 });

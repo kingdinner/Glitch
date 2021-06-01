@@ -4,6 +4,7 @@ const _ = require('lodash');
 
 function defineAge(birthday) {
     birthday = + new Date(birthday);
+    console.log(birthday)
     const yearLength = 24 * 3600 * 365.25 * 1000
     return ~~((Date.now() - birthday) / (yearLength));
 }
@@ -28,12 +29,13 @@ function emailSendController(request, response) {
         axios.spread((...accountResponse) => {
         const user = userExist(accountResponse[0].data, request.body.userid)
         if (user.length < 1) {
-            return response.send("Not exists", 404)
+            return response.status(404).send("Not exists")
         }
+
         const userDetails = userMerge(accountResponse[1].data, user)
         age = defineAge(userDetails[0].birthdate)
         if (age < 10) {
-            return response.send("Invalid age", 404)
+            return response.status(422).send("Invalid age")
         }
 
         let transporter = nodemailer.createTransport({
@@ -45,16 +47,13 @@ function emailSendController(request, response) {
                 pass: process.env.emailPassword // generated ethereal password
             }
         })
-        let emailAccounts = process.env.emailAccount.split(",")
-        emailAccounts.forEach(account => {
             let info = transporter.sendMail({
-            from: `"${"Glitch"}" <${"glicth@example.com"}>`, // sender address
-            to: account, // receiver address
+            from: `"${"Glitch"}" <${process.env.emailSender}>`, // sender address
+            to: process.env.emailSent, // receiver address
             subject: "User Account Details", // Subject line
-            html: "<p>Account Name:"+userDetails.username+"</p><p>Address:"+ userDetails.address +"</p><p>Message:"+ request.body.wish +"</p>"
+            html: "<p>Account Name: "+userDetails[0].username+"</p><p>Address: "+ userDetails[0].address +"</p><p>Message:"+ request.body.wish +"</p>"
             });
-        });
-        return response.send('Username and age is accepted', 200)
+        return response.status(200).send('Username and age is accepted')
         })
     )
 }

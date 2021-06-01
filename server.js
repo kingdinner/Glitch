@@ -7,7 +7,6 @@ const morgan = require('morgan');
 const app = express();
 const bodyParser = require('body-parser');
 const path  = require('path');
-const ejs = require('ejs');
 const route = require('./routes/glitch');
 
 require("dotenv").config();
@@ -17,7 +16,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 app.use(bodyParser.json());
-app.use(morgan());
+app.use(morgan('tiny'));
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
