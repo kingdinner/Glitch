@@ -4,7 +4,6 @@ const _ = require('lodash');
 
 function defineAge(birthday) {
     birthday = + new Date(birthday);
-    console.log(birthday)
     const yearLength = 24 * 3600 * 365.25 * 1000
     return ~~((Date.now() - birthday) / (yearLength));
 }
@@ -29,13 +28,15 @@ function emailSendController(request, response) {
         axios.spread((...accountResponse) => {
         const user = userExist(accountResponse[0].data, request.body.userid)
         if (user.length < 1) {
-            return response.status(404).send("Not exists")
+            return response.status(200).send("You are not registered on our database")
         }
 
         const userDetails = userMerge(accountResponse[1].data, user)
         age = defineAge(userDetails[0].birthdate)
-        if (age < 10) {
-            return response.status(422).send("Invalid age")
+        if (age >= 10) {
+            return response.status(200).send("Sorry your are to old")
+        } else if (age.length == 0) {
+            return response.status(422).send("Invalid Date Format")
         }
 
         let transporter = nodemailer.createTransport({
