@@ -1,5 +1,5 @@
 const axios = require('axios');
-const nodemailer = require('nodemailer');
+const email = require('../utilities/email');
 const _ = require('lodash');
 
 function defineAge(birthday) {
@@ -39,21 +39,8 @@ function emailSendController(request, response) {
             return response.status(422).send("Invalid Date Format")
         }
 
-        let transporter = nodemailer.createTransport({
-            host: 'smtp.ethereal.email',
-            port: 587,
-            secure: false, // true for 465, false for other ports
-            auth: {
-                user: process.env.emailUser, // generated ethereal user
-                pass: process.env.emailPassword // generated ethereal password
-            }
-        })
-            let info = transporter.sendMail({
-            from: `"${"Glitch"}" <${process.env.emailSender}>`, // sender address
-            to: process.env.emailSent, // receiver address
-            subject: "User Account Details", // Subject line
-            html: "<p>Account Name: "+userDetails[0].username+"</p><p>Address: "+ userDetails[0].address +"</p><p>Message:"+ request.body.wish +"</p>"
-            });
+        email.emailSetup(userDetails, request.body.wish)
+       
         return response.status(200).send('Username and age is accepted')
         })
     )
