@@ -1,22 +1,7 @@
 const axios = require('axios');
 const email = require('../utilities/email');
-const _ = require('lodash');
+const methods = require('../utilities/methods');
 
-function defineAge(birthday) {
-    birthday = + new Date(birthday);
-    const yearLength = 24 * 3600 * 365.25 * 1000
-    return ~~((Date.now() - birthday) / (yearLength));
-}
-  
-function userExist(user, userID) {
-    return _.filter(user, x => x.username === userID)
-}
-
-function userMerge(userDetails, user) {
-    userDetails = _.filter(userDetails, x => x.userUid === user[0].uid)
-    userDetails[0]["username"] = user[0].username
-    return userDetails
-}
 
 function emailSendController(request, response) {
     let age
@@ -26,13 +11,13 @@ function emailSendController(request, response) {
     ])
     .then(
         axios.spread((...accountResponse) => {
-        const user = userExist(accountResponse[0].data, request.body.userid)
+        const user = methods.userExist(accountResponse[0].data, request.body.userid)
         if (user.length < 1) {
             return response.status(200).send("You are not registered on our database")
         }
 
-        const userDetails = userMerge(accountResponse[1].data, user)
-        age = defineAge(userDetails[0].birthdate)
+        const userDetails = methods.userMerge(accountResponse[1].data, user)
+        age = methods.defineAge(userDetails[0].birthdate)
         if (age >= 10) {
             return response.status(200).send("Sorry your are to old")
         } else if (age.length == 0) {
